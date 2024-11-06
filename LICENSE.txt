@@ -1,0 +1,25 @@
+export default async function handler(req, res) {
+    const apiKey = process.env.OPENAI_API_KEY; // Hier gebruiken we de API-sleutel
+
+    // Controleer of de API-sleutel is geladen
+    if (!apiKey) {
+        return res.status(500).json({ error: 'API-sleutel niet gevonden' });
+    }
+
+    // Stuur een aanvraag naar de OpenAI API
+    const response = await fetch("https://api.openai.com/v1/completions", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}` // Hier voegen we de sleutel toe
+        },
+        body: JSON.stringify({
+            model: "text-davinci-003",
+            prompt: req.body.prompt || "Hello world!",
+            max_tokens: 50
+        })
+    });
+
+    const data = await response.json();
+    res.status(200).json(data); // Stuur de API-response terug naar de frontend
+}
